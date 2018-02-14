@@ -20,9 +20,19 @@
         <li class="nav-item{% if page_id == 'info' %} active{% endif %}">
           <a class="nav-link" href="{{ url_for('info') }}">Info</a>
         </li>
+        {% if not current_user.is_authenticated %}
         <li class="nav-item{% if page_id == 'register' %} active{% endif %}">
-          <a class="nav-link" href="#">Rejestracja</a>
+          <a class="nav-link" href="{{ url_for('register') }}">Rejestracja</a>
         </li>
+        <li class="nav-item{% if page_id == 'login' %} active{% endif %}">
+          <a class="nav-link" href="{{ url_for('login') }}">Logowanie</a>
+        </li>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <li>
+          <a class="nav-link" href="{{ url_for('logout') }}">Wyloguj</a>
+        </li>
+        {% endif %}
       </ul>
     </div>
   </nav>
