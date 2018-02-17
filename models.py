@@ -7,7 +7,12 @@ from sqlalchemy.types import Integer
 from sqlalchemy.types import String
 from sqlalchemy.types import Boolean
 
-from main import db
+from main import db, lm
+
+
+@lm.user_loader
+def load_user(id):
+    return User.query.get(int(id))
 
 
 class User(db.Model, UserMixin):
