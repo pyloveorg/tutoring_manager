@@ -25,7 +25,8 @@ def register():
         password = request.form.get('password')
 
         if email and password:
-            user = User(email=email, password=password)
+            password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+            user = User(email=email, password=password_hash)
             db.session.add(user)
             db.session.commit()
             flash('User successfully registered')
@@ -43,15 +44,20 @@ def login():
         password = request.form.get('password')
 
         if email and password:
-            registered_user = User.query.filter_by(email=email, password=password).first()
-            if registered_user is None:
-                flash('Username or password is invalid')
+            user = User.query.filter_by(email=email).first()
+            if user is None:
+                flash('Email not present in the database')
                 return redirect(url_for('login'))
 
-            login_user(registered_user)
-            flash('Logged in successfully')
-            return redirect(request.args.get('next') or url_for('home'))
+            if bcrypt.check_password_hash(user.password, password):
+                login_user(user)
+                flash('Logged in successfully')
+                return redirect(request.args.get('next') or url_for('home'))
 
+            flash('Invalid password')
+            return redirect(url_for('login'))
+
+        flash('Email or password not provided')
         return redirect(url_for('info'))
 
 
